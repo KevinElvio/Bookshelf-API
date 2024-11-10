@@ -90,21 +90,21 @@ const getBookHandler = () => ({
 
 const getDetailBookHandler = (req, h) => {
     const { bookId } = req.params;
-    
+
     const selectbook = book.filter((b) => b.id === bookId)[0];
-    
+
     if (selectbook !== undefined) {
         return {
             status: 'success',
             data: {
-                book : selectbook,
+                book: selectbook,
             }
         }
     }
     const response = h.response({
         status: 'Failed',
         message: "Buku tidak ditemukan",
-        
+
     });
     response.code(404)
     return response;
@@ -116,6 +116,52 @@ const updateBookHandler = (req, h) => {
     const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
 
     const updatedAt = new Date().toISOString();
+
+    const index = book.findIndex((book) => book.id === bookId);
+
+    if (index !== -1) {
+        if(name === undefined){
+            const response = h.response({
+                status: 'fail',
+                message: 'Gagal memperbarui buku. Mohon isi nama buku',
+            });
+            response.code(400);
+            return response;
+        }
+        else if(readPage > pageCount){
+            const response = h.response({
+                status: 'fail',
+                message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
+            });
+            response.code(400);
+            return response;
+        }
+        book[index] = {
+            ...book[index],
+            name,
+            year,
+            author,
+            summary,
+            publisher,
+            pageCount,
+            readPage,
+            reading,
+            
+        };
+
+        const response = h.response({
+            status: "Success",
+            message: "Buku berhasil diperbarui"
+        });
+        response.code(200)
+        return response;
+    }
+    const response = h.response({
+        status: 'fail',
+        message: 'Gagal memperbarui buku. Id tidak ditemukan',
+    });
+    response.code(404);
+    return response;
 }
 
 module.exports = { addBookHandler, getBookHandler, getDetailBookHandler, updateBookHandler };
