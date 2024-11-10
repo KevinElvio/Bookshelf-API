@@ -1,6 +1,5 @@
 const { nanoid } = require("nanoid");
 const book = require("./book");
-const book = require("./book");
 
 const addBookHandler = (req, h) => {
     let { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
@@ -90,26 +89,33 @@ const getBookHandler = () => ({
 });
 
 const getDetailBookHandler = (req, h) => {
-    const { id } = req.params;
+    const { bookId } = req.params;
     
-    const book = book.filter((b) => b.id === id)[0];
+    const selectbook = book.filter((b) => b.id === bookId)[0];
     
-    if (book !== undefined) {
+    if (selectbook !== undefined) {
         return {
             status: 'success',
             data: {
-                note,
+                book : selectbook,
             }
         }
     }
     const response = h.response({
         status: 'Failed',
-        message: "Catatan Tidak di Temukan",
+        message: "Buku tidak ditemukan",
         
     });
-    
     response.code(404)
     return response;
 };
 
-module.exports = { addBookHandler, getBookHandler, getDetailBookHandler };
+const updateBookHandler = (req, h) => {
+    const { bookId } = req.params;
+
+    const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
+
+    const updatedAt = new Date().toISOString();
+}
+
+module.exports = { addBookHandler, getBookHandler, getDetailBookHandler, updateBookHandler };
