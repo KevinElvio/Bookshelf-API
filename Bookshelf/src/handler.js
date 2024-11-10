@@ -1,5 +1,6 @@
 const { nanoid } = require("nanoid");
 const book = require("./book");
+const book = require("./book");
 
 const addBookHandler = (req, h) => {
     let { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
@@ -77,66 +78,38 @@ const addBookHandler = (req, h) => {
 
 };
 
-const getBookHandler = (req, h) => {
-    const { name, reading, finished } = req.query;
+const getBookHandler = () => ({
+    status: 'success',
+    data: {
+        books: book.map((b) => ({
+            id: b.id,
+            name: b.name,
+            publisher: b.publisher,
+        })),
+    },
+});
 
-    if (name !== undefined) {
-        const response = h.response({
+const getDetailBookHandler = (req, h) => {
+    const { id } = req.params;
+    
+    const book = book.filter((b) => b.id === id)[0];
+    
+    if (book !== undefined) {
+        return {
             status: 'success',
             data: {
-                books: book.filter((b) => b.name.toLowerCase().includes(name.toLowerCase())).map((b) => ({
-                    id: b.id,
-                    name: b.name,
-                    publisher: b.publisher,
-                })),
-            },
-        });
-        response.code(200);
-        return response;
+                note,
+            }
+        }
     }
-
-    if (reading !== undefined) {
-        const response = h.response({
-            status: 'success',
-            data: {
-                books: book.filter((b) => b.reading == reading).map((b) => ({
-                    id: b.id,
-                    name: b.name,
-                    publisher: b.publisher,
-                })),
-            },
-        });
-        response.code(200);
-        return response;
-    }
-
-    if (finished !== undefined) {
-        const response = h.response({
-            status: 'success',
-            data: {
-                books: book.filter((b) => b.finished == finished).map((b) => ({
-                    id: b.id,
-                    name: b.name,
-                    publisher: b.publisher,
-                })),
-            },
-        });
-        response.code(200);
-        return response;
-    }
-
     const response = h.response({
-        status: 'success',
-        data: {
-            books: book.map((b) => ({
-                id: b.id,
-                name: b.name,
-                publisher: b.publisher,
-            })),
-        },
+        status: 'Failed',
+        message: "Catatan Tidak di Temukan",
+        
     });
-    response.code(200);
+    
+    response.code(404)
     return response;
 };
 
-module.exports = { addBookHandler, getBookHandler };
+module.exports = { addBookHandler, getBookHandler, getDetailBookHandler };
