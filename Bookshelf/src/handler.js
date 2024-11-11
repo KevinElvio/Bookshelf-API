@@ -11,7 +11,6 @@ const addBookHandler = (req, h) => {
 
     let finished = false;
 
-
     const newBook = {
         id, name, year, author, summary, publisher, pageCount, readPage, finished, reading, insertedAt, updatedAt
     };
@@ -45,7 +44,6 @@ const addBookHandler = (req, h) => {
             finished = false;
             reading = true;
         }
-
 
         const response = h.response({
             status: 'success',
@@ -102,7 +100,7 @@ const getDetailBookHandler = (req, h) => {
         }
     }
     const response = h.response({
-        status: 'Failed',
+        status: 'fail',
         message: "Buku tidak ditemukan",
 
     });
@@ -115,12 +113,10 @@ const updateBookHandler = (req, h) => {
 
     const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
 
-    const updatedAt = new Date().toISOString();
-
     const index = book.findIndex((book) => book.id === bookId);
 
     if (index !== -1) {
-        if(name === undefined){
+        if (name === undefined) {
             const response = h.response({
                 status: 'fail',
                 message: 'Gagal memperbarui buku. Mohon isi nama buku',
@@ -128,7 +124,7 @@ const updateBookHandler = (req, h) => {
             response.code(400);
             return response;
         }
-        else if(readPage > pageCount){
+        else if (readPage > pageCount) {
             const response = h.response({
                 status: 'fail',
                 message: 'Gagal memperbarui buku. readPage tidak boleh lebih besar dari pageCount',
@@ -146,11 +142,11 @@ const updateBookHandler = (req, h) => {
             pageCount,
             readPage,
             reading,
-            
+
         };
 
         const response = h.response({
-            status: "Success",
+            status: "success",
             message: "Buku berhasil diperbarui"
         });
         response.code(200)
@@ -172,7 +168,7 @@ const deleteBookHandler = (req, h) => {
     if (index !== -1) {
         book.splice(index, 1);
         const response = h.response({
-            status: "Success",
+            status: "success",
             message: "Buku berhasil dihapus"
         });
         response.code(200);
@@ -185,5 +181,6 @@ const deleteBookHandler = (req, h) => {
     response.code(404);
     return response;
 }
+
 
 module.exports = { addBookHandler, getBookHandler, getDetailBookHandler, updateBookHandler, deleteBookHandler };
