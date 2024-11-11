@@ -49,7 +49,7 @@ const addBookHandler = (req, h) => {
             status: 'success',
             message: 'Buku berhasil ditambahkan',
             data: {
-                id: id,
+                bookid: id,
                 name: name,
                 year: year,
                 author: author,
@@ -75,45 +75,61 @@ const addBookHandler = (req, h) => {
 
 };
 
-const getBookHandler = () => ({
-    status: 'success',
-    data: {
-        books: book.map((b) => ({
-            id: b.id,
-            name: b.name,
-            publisher: b.publisher,
-        })),
-    },
-});
+const getBookHandler = () => {
+    const books = book.map((b) => ({
+        id: b.id,
+        name: b.name,
+        publisher: b.publisher,
+    }));
+
+    return {
+        status: 'success',
+        data: {
+            books: books,
+        },
+    };
+};
 
 const getDetailBookHandler = (req, h) => {
-    const { bookId } = req.params;
+    const { bookid } = req.params;
 
-    const selectbook = book.filter((b) => b.id === bookId)[0];
+    const selectbook = book.filter((b) => b.id === bookid)[0];
 
     if (selectbook !== undefined) {
         return {
             status: 'success',
             data: {
-                book: selectbook,
+                book: {
+                    id: selectbook.id,
+                    name: selectbook.name,
+                    year: selectbook.year,
+                    author: selectbook.author,
+                    summary: selectbook.summary,
+                    publisher: selectbook.publisher,
+                    pageCount: selectbook.pageCount,
+                    readPage: selectbook.readPage,
+                    finished: selectbook.finished,
+                    reading: selectbook.reading,
+                    insertedAt: selectbook.insertedAt,
+                    updatedAt: selectbook.updatedAt,
+                }
             }
-        }
+        };
     }
     const response = h.response({
         status: 'fail',
         message: "Buku tidak ditemukan",
-
     });
-    response.code(404)
+    response.code(404);
     return response;
 };
 
 const updateBookHandler = (req, h) => {
-    const { bookId } = req.params;
+    const { bookid } = req.params;
 
     const { name, year, author, summary, publisher, pageCount, readPage, reading } = req.payload;
 
-    const index = book.findIndex((book) => book.id === bookId);
+    const index = book.findIndex((book) => book.id === bookid);
 
     if (index !== -1) {
         if (name === undefined) {
@@ -161,9 +177,9 @@ const updateBookHandler = (req, h) => {
 }
 
 const deleteBookHandler = (req, h) => {
-    const { bookId } = req.params;
+    const { bookid } = req.params;
 
-    const index = book.findIndex((book) => book.id === bookId);
+    const index = book.findIndex((book) => book.id === bookid);
 
     if (index !== -1) {
         book.splice(index, 1);
